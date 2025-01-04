@@ -46,6 +46,15 @@ a {
   to { transform: scaleX(1); }
 }
 
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-grow {
   animation: grow both linear;
 }
@@ -60,6 +69,22 @@ a {
 
 .animate-progress {
   animation: progress both linear;
+}
+
+.animate-scroll {
+  animation: scroll 40s linear infinite;
+}
+
+/* Pause animation on hover */
+.animate-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Adjust animation speed for mobile */
+@media (max-width: 768px) {
+  .animate-scroll {
+    animation-duration: 30s;
+  }
 }
 
 .overlap > * {
@@ -88,4 +113,12 @@ a {
   display: inline-block;
   margin-right: 0.25em;
   white-space: nowrap;
+}
+
+@layer base {
+  html {
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+  }
 }

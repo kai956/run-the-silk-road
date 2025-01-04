@@ -36,51 +36,59 @@ export default function StatsSection() {
     const timer = setTimeout(() => {
       if (!titleRef.current || !descriptionRef.current) return;
 
+      // Split text for both mobile and desktop
       titleSplitRef.current = new SplitType(titleRef.current, {
-        types: 'chars',
-        tagName: 'span'
+        types: 'words',  // Changed from 'chars' to 'words'
+        tagName: 'span',
+        wordClass: 'word-wrap'  // Add class for word wrapping
       }) as SplitTypeInstance;
 
       descriptionSplitRef.current = new SplitType(descriptionRef.current, {
-        types: 'words',
-        tagName: 'span'
+        types: 'words',  // Use words instead of lines
+        tagName: 'span',
+        wordClass: 'word-wrap'  // Add class for word wrapping
       }) as SplitTypeInstance;
 
+      // Add initial styles
       gsap.set([
-        titleSplitRef.current?.chars || [], 
+        titleSplitRef.current?.words || [], 
         descriptionSplitRef.current?.words || []
       ], {
-        filter: 'blur(12px)',
         opacity: 0,
-        scale: 0.9
+        y: 20,
+        filter: 'blur(8px)'
       });
 
-      gsap.to(titleSplitRef.current?.chars || [], {
+      // Animate title
+      gsap.to(titleSplitRef.current?.words || [], {
         scrollTrigger: {
           trigger: titleRef.current,
-          start: 'top 90%',
+          start: 'top 80%',
           end: 'top 40%',
-          scrub: 1
+          scrub: false
         },
-        filter: 'blur(0px)',
         opacity: 1,
-        scale: 1,
-        stagger: 0.05,
-        duration: 1
+        y: 0,
+        filter: 'blur(0px)',
+        stagger: 0.1,
+        duration: 0.8,
+        ease: 'power2.out'
       });
 
+      // Animate description
       gsap.to(descriptionSplitRef.current?.words || [], {
         scrollTrigger: {
           trigger: descriptionRef.current,
-          start: 'top 90%',
+          start: 'top 80%',
           end: 'top 40%',
-          scrub: 1
+          scrub: false
         },
-        filter: 'blur(0px)',
         opacity: 1,
-        scale: 1,
-        stagger: 0.02,
-        duration: 1
+        y: 0,
+        filter: 'blur(0px)',
+        stagger: 0.05,
+        duration: 0.8,
+        ease: 'power2.out'
       });
     }, 100);
 
@@ -111,16 +119,34 @@ export default function StatsSection() {
 
   return (
     <section key={language} className="relative min-h-screen w-full py-10 md:py-20 flex flex-col items-center justify-center gap-8 md:gap-16">
-      <div className="text-center max-w-5xl mx-auto px-4">
+      <div className="text-center w-[92%] sm:w-[85%] md:w-[80%] max-w-5xl mx-auto">
         <h2 
           ref={titleRef}
-          className="text-3xl md:text-4xl font-bold mb-4 text-[#1E1E4A] overflow-hidden whitespace-normal break-words hyphens-none"
+          className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 text-[#1E1E4A] leading-tight"
+          style={{ 
+            wordBreak: 'keep-all',
+            overflowWrap: 'normal',
+            width: '100%',
+            display: 'inline-block',
+            hyphens: 'none',
+            WebkitHyphens: 'none',
+            msHyphens: 'none'
+          }}
         >
           {t.experienceTitle}
         </h2>
         <p 
           ref={descriptionRef}
-          className="text-lg md:text-xl text-gray-600 mb-8 overflow-hidden"
+          className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl mx-auto"
+          style={{ 
+            wordBreak: 'keep-all',
+            overflowWrap: 'normal',
+            width: '100%',
+            display: 'inline-block',
+            hyphens: 'none',
+            WebkitHyphens: 'none',
+            msHyphens: 'none'
+          }}
         >
           {t.experienceDescription}
         </p>
@@ -166,7 +192,9 @@ export default function StatsSection() {
               >
                 {stat.value}
               </motion.h3>
-              <p className="text-xs md:text-sm tracking-wider opacity-80">{stat.label}</p>
+              <p className="text-xs md:text-sm tracking-wider opacity-80 whitespace-normal break-words hyphens-auto">
+                {stat.label}
+              </p>
             </motion.div>
           ))}
         </div>

@@ -25,7 +25,7 @@ export default function Header() {
       <nav className="hidden md:flex bg-white/90 backdrop-blur-md shadow-lg rounded-full py-2.5 px-5 items-center gap-5 mx-auto mt-6 w-fit">
         <div className="w-[60px] flex-shrink-0">
           <Image
-            src="/images/logo.png"
+            src="/logo.png"
             alt="Silk Road Marathon"
             width={60}
             height={24}
@@ -74,7 +74,7 @@ export default function Header() {
         <div className="flex justify-between items-center px-4 py-3">
           <div className="w-[45px]">
             <Image
-              src="/images/logo.png"
+              src="/logo.png"
               alt="Silk Road Marathon"
               width={45}
               height={20}

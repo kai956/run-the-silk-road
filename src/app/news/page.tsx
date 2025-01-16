@@ -79,7 +79,7 @@ export default function NewsPage() {
               ))
             ) : newsItems.length > 0 ? (
               newsItems.map((item) => (
-                <Link href={`/news/${item.sys.id}`} key={item.sys.id}>
+                <Link href={`/news/${item.sys.id}?lang=${language}`} key={item.sys.id}>
                   <motion.article
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

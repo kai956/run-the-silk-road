@@ -6,25 +6,39 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { documentToReactComponents } from '@contentful/rich-text-react-renderer';
 import { BLOCKS, MARKS, Document } from '@contentful/rich-text-types';
+import Header from '../../components/Header';
+import { useEffect, useState } from 'react';
+import { getNewsById } from '../../lib/contentful';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface NewsArticleClientProps {
   article: any;
 }
 
-export default function NewsArticleClient({ article }: NewsArticleClientProps) {
+export default function NewsArticleClient({ article: initialArticle }: NewsArticleClientProps) {
   const { language } = useLanguage();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [article, setArticle] = useState(initialArticle);
 
-  console.log('Current language:', language);
-  console.log('Article data:', {
-    id: article?.sys?.id,
-    createdAt: article?.sys?.createdAt,
-    fields: article?.fields,
-    hasContent: !!article?.fields?.content,
-    contentType: article?.fields?.content ? typeof article.fields.content : 'undefined'
-  });
+  useEffect(() => {
+    const fetchArticle = async () => {
+      const locale = language === 'en' ? 'en-US' : 'ru-RU';
+      const articleId = article.sys.id;
+      const updatedArticle = await getNewsById(articleId, locale);
+      if (updatedArticle) {
+        setArticle(updatedArticle);
+      }
+      // Update URL with current language
+      const currentParams = new URLSearchParams(searchParams.toString());
+      currentParams.set('lang', language);
+      router.push(`?${currentParams.toString()}`, { scroll: false });
+    };
+
+    fetchArticle();
+  }, [language]); // Re-fetch when language changes
 
   if (!article) {
-    console.log('No article data received');
     return (
       <div className="min-h-screen bg-gray-50 pt-32 pb-20">
         <div className="container mx-auto px-4 text-center">
@@ -36,18 +50,31 @@ export default function NewsArticleClient({ article }: NewsArticleClientProps) {
     );
   }
 
-  const richTextContent = article.fields?.content;
-  
-  console.log('Content for language:', {
-    language,
-    hasContent: !!richTextContent,
-    contentType: richTextContent ? typeof richTextContent : 'undefined',
-    isRichText: richTextContent?.nodeType === 'document',
-    content: richTextContent
-  });
+  // Debug logging to check the structure of the article data
+  console.log('Article fields:', article.fields);
+  console.log('Current language:', language);
 
-  // Remove the string conversion since content is already in rich text format
-  const processedContent = richTextContent;
+  // Get content directly from fields - Contentful already provides localized content
+  const title = article.fields?.title;
+  const content = article.fields?.content;
+  const description = language === 'en' 
+    ? 'Read the latest updates on this article.' 
+    : 'Читайте последние обновления в этой статье.';
+
+  // Image alt text
+  const imageAlt = article.fields?.title || '';
+
+  // Header for the article
+  const header = (
+    <header className="text-center mb-8">
+      <h2 className="text-3xl font-bold text-[#1E1E4A]">
+        {title || (language === 'en' ? 'Untitled Article' : 'Статья без названия')}
+      </h2>
+      <p className="text-gray-600">
+        {description}
+      </p>
+    </header>
+  );
 
   const options = {
     renderNode: {
@@ -117,6 +144,7 @@ export default function NewsArticleClient({ article }: NewsArticleClientProps) {
 
   return (
     <main className="min-h-screen bg-gray-50 pt-32 pb-20">
+      <Header />
       <div className="container mx-auto px-4">
         <article className="max-w-4xl mx-auto">
           <motion.div
@@ -125,32 +153,14 @@ export default function NewsArticleClient({ article }: NewsArticleClientProps) {
             className="space-y-8"
           >
             {/* Header */}
-            <header className="text-center space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold text-[#1E1E4A]">
-                {article.fields?.title}
-              </h1>
-              
-              <div className="flex items-center justify-center gap-6 text-gray-600">
-                <span className="flex items-center gap-2">
-                  <FaCalendarAlt />
-                  {new Date(article.sys.createdAt).toLocaleDateString(
-                    language === 'en' ? 'en-US' : 'ru-RU',
-                    { year: 'numeric', month: 'long', day: 'numeric' }
-                  )}
-                </span>
-                <span className="flex items-center gap-2">
-                  <FaTag />
-                  {article.fields?.category}
-                </span>
-              </div>
-            </header>
+            {header}
 
             {/* Featured Image */}
             {article.fields?.image?.fields?.file?.url && (
               <div className="relative h-96 rounded-lg overflow-hidden">
                 <Image
                   src={`https:${article.fields.image.fields.file.url}`}
-                  alt={article.fields?.title || ''}
+                  alt={imageAlt || ''}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                   className="object-cover"
@@ -160,8 +170,8 @@ export default function NewsArticleClient({ article }: NewsArticleClientProps) {
 
             {/* Content */}
             <div className="prose prose-lg max-w-none">
-              {processedContent ? (
-                documentToReactComponents(processedContent as Document, options)
+              {content ? (
+                documentToReactComponents(content as Document, options)
               ) : (
                 <p className="text-center text-gray-600">
                   {language === 'en' ? 'No content available.' : 'Содержание недоступно.'}

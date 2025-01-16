@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-semibold mb-6">{language === 'en' ? 'Contact Us' : 'Контакты'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Contact Us' : 'Контакты'}</h3>
             <div className="space-y-3">
               <p>Run The Silk Road Marathon</p>
               <p>{t.hours}</p>
@@ -26,7 +26,7 @@ export default function Footer() {
 
           {/* Address Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-6">{language === 'en' ? 'Address' : 'Адрес'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Address' : 'Адрес'}</h3>
             <div className="space-y-3">
               <p>{t.address}</p>
               <p>{t.city}</p>
@@ -35,7 +35,7 @@ export default function Footer() {
 
           {/* Social Media */}
           <div>
-            <h3 className="text-xl font-semibold mb-6">{language === 'en' ? 'Follow Us' : 'Соц. сети'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Follow Us' : 'Соц. сети'}</h3>
             <div className="flex space-x-4">
               <a
                 href="https://instagram.com/silkroadmarathon"

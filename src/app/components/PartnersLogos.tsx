@@ -1,11 +1,12 @@
 'use client';
+
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../translations';
 import { useState, useEffect } from 'react';
 
-export default function PartnersLogos() {
+export default function PartnersLogos({ className = "" }: { className?: string }) {
   const { language } = useLanguage();
   const t = translations[language];
   const [isMobile, setIsMobile] = useState(false);
@@ -27,57 +28,92 @@ export default function PartnersLogos() {
     { name: 'Partner 5', logo: '/logos/partner5.svg' }
   ];
 
-  return (
-    <div className="w-full overflow-hidden">
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 md:mb-12">
-        {t.partners.title}
-      </h2>
-
-      <div className="relative max-w-[95vw] md:max-w-[90vw] mx-auto">
-        {/* Gradient Masks */}
-        <div className="absolute left-0 top-0 bottom-0 w-6 md:w-20 bg-gradient-to-r from-[#F5F5F5] to-transparent z-10" />
-        <div className="absolute right-0 top-0 bottom-0 w-6 md:w-20 bg-gradient-to-l from-[#F5F5F5] to-transparent z-10" />
-
-        {/* Container to clip animation */}
-        <div className="overflow-hidden">
-          <div className="inline-flex animate-scroll">
-            {/* First set of logos */}
-            <div className="flex gap-2 md:gap-16 items-center">
-              {partners.map((partner, index) => (
-                <div 
-                  key={`first-${partner.name}-${index}`}
-                  className="w-14 md:w-40 h-10 md:h-24 relative transition-transform duration-300 hover:scale-110"
-                >
-                  <Image
-                    src={partner.logo}
-                    alt={partner.name}
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              ))}
+  if (isMobile) {
+    return (
+      <div className={`w-full bg-[#1E1E4A] ${className}`}>
+        <div className="grid grid-cols-2 gap-8 px-6 max-w-md mx-auto py-8">
+          {partners.map((partner) => (
+            <div 
+              key={partner.name}
+              className="aspect-[3/2] relative"
+            >
+              <Image
+                src={partner.logo}
+                alt={partner.name}
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
-            {/* Second set of logos */}
-            <div className="flex gap-2 md:gap-16 items-center">
-              {partners.map((partner, index) => (
-                <div 
-                  key={`second-${partner.name}-${index}`}
-                  className="w-14 md:w-40 h-10 md:h-24 relative transition-transform duration-300 hover:scale-110"
-                >
-                  <Image
-                    src={partner.logo}
-                    alt={partner.name}
-                    fill
-                    className="object-contain"
-                    priority
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <section className="py-12">
+      <motion.h2
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-4xl md:text-5xl font-bold text-center mb-16 text-[#1E1E4A]"
+      >
+        {t.partners.title}
+      </motion.h2>
+
+      <div className="relative overflow-hidden">
+        {/* Left fade */}
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
+        {/* Right fade */}
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
+
+        <motion.div
+          initial={{ x: 0 }}
+          animate={{ x: "-50%" }}
+          transition={{
+            duration: 30,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+          className="flex gap-16 items-center whitespace-nowrap px-16"
+        >
+          {/* First set of logos */}
+          <div className="flex gap-16 items-center">
+            {partners.map((partner) => (
+              <div 
+                key={partner.name}
+                className="w-48 h-32 relative"
+              >
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Duplicate set for seamless loop */}
+          <div className="flex gap-16 items-center">
+            {partners.map((partner) => (
+              <div 
+                key={`${partner.name}-duplicate`}
+                className="w-48 h-32 relative"
+              >
+                <Image
+                  src={partner.logo}
+                  alt={partner.name}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 } 

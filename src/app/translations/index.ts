@@ -1,7 +1,7 @@
 export const translations = {
   en: {
     about: "About",
-    route: "Route",
+    volunteering: "Volunteering",
     register: "Register",
     contact: "Contact",
     
@@ -79,7 +79,7 @@ export const translations = {
   },
   ru: {
     about: "О нас",
-    route: "Маршрут",
+    volunteering: "Волонтерство",
     register: "Регистрация",
     contact: "Контакты",
     

@@ -1,17 +1,18 @@
 import { getNewsById } from '../../lib/contentful';
 import NewsArticleClient from './NewsArticleClient';
 
-interface PageProps {
+type Props = {
   params: { id: string };
-  searchParams: { lang?: string };
-}
+  searchParams?: { [key: string]: string | string[] | undefined };
+};
 
 export default async function NewsArticlePage({
   params,
-  searchParams,
-}: PageProps) {
+  searchParams = {},
+}: Props) {
   try {
-    const locale = searchParams.lang === 'ru' ? 'ru-RU' : 'en-US';
+    const lang = typeof searchParams.lang === 'string' ? searchParams.lang : undefined;
+    const locale = lang === 'ru' ? 'ru-RU' : 'en-US';
     const article = await getNewsById(params.id, locale);
     return <NewsArticleClient article={article} />;
   } catch (error) {

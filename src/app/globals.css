@@ -11,8 +11,11 @@
 
 /* Basic scrolling behavior */
 html {
-  scroll-behavior: smooth;
+  /* Only use smooth scrolling for anchor links, not all scrolling */
   height: 100%;
+  overflow-y: auto;
+  /* Prevent scroll chaining and bouncing at end of page */
+  overscroll-behavior: none;
 }
 
 body {
@@ -21,18 +24,27 @@ body {
   overflow-x: hidden;
   margin: 0;
   padding: 0;
+  min-height: 100%;
+  position: relative;
+  overflow-y: auto;
+  /* Prevent overscrolling past the footer */
+  overscroll-behavior-y: none;
+  /* Enable smooth scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Create a proper page container that doesn't allow overscrolling */
+main {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
-  }
-}
-
-/* Ensure smooth scrolling on iOS */
-@supports (-webkit-touch-callout: none) {
-  body {
-    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -139,14 +151,14 @@ h1, h2, h3, h4, h5, h6 {
   padding: 0;
 }
 
-/* Lenis Scroll Styles */
+/* Modified Lenis Scroll Styles - only apply when needed */
 html.lenis {
-  height: 100%;
+  height: auto;
+  overflow: auto;
 }
 
 .lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-  -webkit-overflow-scrolling: touch;
+  scroll-behavior: auto;
 }
 
 .lenis.lenis-smooth [data-lenis-prevent] {
@@ -154,13 +166,12 @@ html.lenis {
 }
 
 .lenis.lenis-stopped {
-  overflow: hidden;
+  overflow: auto;
 }
 
-/* Remove fixed positioning that might cause gaps */
 html.has-scroll-smooth {
   overflow: auto;
-  height: 100%;
+  height: auto;
 }
 
 html.has-scroll-dragging {
@@ -168,4 +179,22 @@ html.has-scroll-dragging {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+
+/* Ensure footer is always visible */
+footer {
+  margin-top: auto;
+  width: 100%;
+  position: relative;
+}
+
+/* Add a specific class to handle scroll boundaries */
+.scroll-boundary {
+  overscroll-behavior: none;
+  overflow-x: hidden;
+}
+
+/* Ensure smooth scrolling continues to work while preventing overscroll */
+html, body {
+  overscroll-behavior-y: none;
 } 

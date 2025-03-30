@@ -2,20 +2,21 @@
 import Link from 'next/link';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../translations';
+import { FaInstagram, FaFacebookF } from 'react-icons/fa';
 
 export default function Footer() {
   const { language } = useLanguage();
   const t = translations[language].footer;
 
   return (
-    <footer className="bg-[#1E1E4A] text-white">
-      <div className="bg-white h-24 rounded-b-[64px] mb-16" />
+    <footer className="bg-[#1E1E4A] text-white relative z-10 mt-auto">
+      <div className="bg-white h-24 rounded-b-[64px] mb-20" />
       
-      <div className="container mx-auto px-4 py-16 -mt-8">
+      <div className="container mx-auto px-4 py-16 -mt-8 pb-36">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* Contact Info */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Contact Us' : 'Контакты'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{t.contactUs}</h3>
             <div className="space-y-3">
               <p>Run The Silk Road Marathon</p>
               <p>{t.hours}</p>
@@ -26,7 +27,7 @@ export default function Footer() {
 
           {/* Address Section */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Address' : 'Адрес'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Address' : language === 'ru' ? 'Адрес' : 'Дарек'}</h3>
             <div className="space-y-3">
               <p>{t.address}</p>
               <p>{t.city}</p>
@@ -35,46 +36,36 @@ export default function Footer() {
 
           {/* Social Media */}
           <div>
-            <h3 className="text-xl font-semibold mb-6 text-white">{language === 'en' ? 'Follow Us' : 'Соц. сети'}</h3>
+            <h3 className="text-xl font-semibold mb-6 text-white">{t.followUs}</h3>
             <div className="flex space-x-4">
               <a
-                href="https://instagram.com/silkroadmarathon"
+                href="https://www.instagram.com/run_the_silkroad/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity"
               >
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <i className="fab fa-instagram text-xl"></i>
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                  <FaInstagram className="text-xl" />
                 </div>
               </a>
               <a
-                href="https://facebook.com/silkroadmarathon"
+                href="https://www.facebook.com/RuntheSilkRoad/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:opacity-80 transition-opacity"
               >
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <i className="fab fa-facebook text-xl"></i>
-                </div>
-              </a>
-              <a
-                href="https://twitter.com/silkroadrun"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:opacity-80 transition-opacity"
-              >
-                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center">
-                  <i className="fab fa-twitter text-xl"></i>
+                <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                  <FaFacebookF className="text-xl" />
                 </div>
               </a>
             </div>
           </div>
         </div>
-
-        <div className="mt-20 pt-8 pb-12 border-t border-white/10 text-center text-sm">
-          <p>© 2024 Run The Silk Road Marathon. All rights reserved.</p>
-        </div>
       </div>
+      
+      {/* Add extra padding at the bottom and prevent scrolling beyond this point */}
+      <div className="h-24 w-full"></div>
+      <div id="scroll-boundary" className="absolute w-full h-1" style={{ bottom: 0 }}></div>
     </footer>
   );
 } 

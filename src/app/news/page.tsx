@@ -5,11 +5,11 @@ import { motion } from 'framer-motion';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
-import { getNews } from '../lib/contentful';
+import { getNews, getLocalizedValue, urlFor } from '../lib/sanity';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaCalendarAlt } from 'react-icons/fa';
-import Partners from '../components/Partners';
+
 
 export default function NewsPage() {
   const [newsItems, setNewsItems] = useState<any[]>([]);
@@ -22,8 +22,7 @@ export default function NewsPage() {
       try {
         setIsLoading(true);
         setError(null);
-        const locale = language === 'en' ? 'en-US' : 'ru-RU';
-        const news = await getNews(undefined, locale);
+        const news = await getNews(undefined, language);
         setNewsItems(news);
       } catch (error) {
         console.error('Error in NewsPage:', error);
@@ -35,6 +34,54 @@ export default function NewsPage() {
 
     fetchNews();
   }, [language]);
+
+  // Function to get localized title based on language
+  const getLocalizedTitle = () => {
+    switch (language) {
+      case 'ru':
+        return 'Новости и обновления';
+      case 'kg':
+        return 'Жаңылыктар жана жаңыртуулар';
+      default:
+        return 'News & Updates';
+    }
+  };
+
+  // Function to get localized subtitle based on language
+  const getLocalizedSubtitle = () => {
+    switch (language) {
+      case 'ru':
+        return 'Будьте в курсе последних новостей о наших марафонах и мероприятиях';
+      case 'kg':
+        return 'Биздин марафондор жана иш-чаралар жөнүндө акыркы жаңылыктардан кабардар болуңуз';
+      default:
+        return 'Stay updated with the latest news about our marathons and events';
+    }
+  };
+
+  // Function to get localized empty state message
+  const getLocalizedEmptyMessage = () => {
+    switch (language) {
+      case 'ru':
+        return 'Нет доступных новостей.';
+      case 'kg':
+        return 'Жаңылыктар жок.';
+      default:
+        return 'No news articles available.';
+    }
+  };
+
+  // Get locale for date formatting
+  const getDateLocale = () => {
+    switch (language) {
+      case 'ru':
+        return 'ru-RU';
+      case 'kg':
+        return 'ky-KG';
+      default:
+        return 'en-US';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -49,12 +96,10 @@ export default function NewsPage() {
             className="text-center mb-16"
           >
             <h1 className="text-4xl md:text-5xl font-bold text-[#1E1E4A] mb-4">
-              {language === 'en' ? 'News & Updates' : 'Новости и обновления'}
+              {getLocalizedTitle()}
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              {language === 'en' 
-                ? 'Stay updated with the latest news about our marathons and events'
-                : 'Будьте в курсе последних новостей о наших марафонах и мероприятиях'}
+              {getLocalizedSubtitle()}
             </p>
           </motion.div>
 
@@ -79,18 +124,18 @@ export default function NewsPage() {
               ))
             ) : newsItems.length > 0 ? (
               newsItems.map((item) => (
-                <Link href={`/news/${item.sys.id}?lang=${language}`} key={item.sys.id}>
+                <Link href={`/news/${item.slug || item._id}?lang=${language}`} key={item._id}>
                   <motion.article
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     whileHover={{ y: -10 }}
                     className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
                   >
-                    {item.fields?.image?.fields?.file?.url && (
+                    {item.image && (
                       <div className="relative h-48">
                         <Image
-                          src={`https:${item.fields.image.fields.file.url}`}
-                          alt={item.fields.title || ''}
+                          src={urlFor(item.image).url()}
+                          alt={getLocalizedValue(item.title, language) || ''}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover"
@@ -100,17 +145,17 @@ export default function NewsPage() {
                     
                     <div className="p-6">
                       <h3 className="text-xl font-semibold mb-3 text-[#1E1E4A] line-clamp-2">
-                        {item.fields?.title || ''}
+                        {getLocalizedValue(item.title, language) || ''}
                       </h3>
                       
                       <p className="text-gray-600 mb-4 line-clamp-3">
-                        {item.fields?.excerpt || ''}
+                        {getLocalizedValue(item.excerpt, language) || ''}
                       </p>
                       
                       <div className="flex items-center text-sm text-gray-500">
                         <FaCalendarAlt className="mr-2" />
-                        {new Date(item.sys.createdAt).toLocaleDateString(
-                          language === 'en' ? 'en-US' : 'ru-RU',
+                        {new Date(item._createdAt || item.publishedAt).toLocaleDateString(
+                          getDateLocale(),
                           { year: 'numeric', month: 'long', day: 'numeric' }
                         )}
                       </div>
@@ -121,7 +166,7 @@ export default function NewsPage() {
             ) : (
               <div className="col-span-full text-center py-12">
                 <p className="text-gray-600">
-                  {language === 'en' ? 'No news articles available.' : 'Нет доступных новостей.'}
+                  {getLocalizedEmptyMessage()}
                 </p>
               </div>
             )}
@@ -130,11 +175,6 @@ export default function NewsPage() {
       </main>
 
       <Footer />
-      
-      {/* Partners Section */}
-      <div className="bg-[#1E1E4A] py-8">
-        <Partners />
-      </div>
     </div>
   );
 } 

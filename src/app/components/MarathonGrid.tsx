@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { FaSmile, FaCalendarAlt, FaMapMarkerAlt, FaRoute } from 'react-icons/fa';
+import ColorfulButton from './ui/ColorfulButton';
 
 interface Marathon {
   id: string;
@@ -23,49 +24,78 @@ export default function MarathonGrid() {
   const marathons: Marathon[] = [
     {
       id: 'silk-road-2025',
-      title: language === 'en' ? 'Silk Road Marathon 2025' : 'Марафон Шелкового пути 2025',
+      title: language === 'en' 
+        ? 'Silk Road SHOS Marathon 2025' 
+        : language === 'ru' 
+          ? 'Марафон Шелкового пути ШОС 2025'
+          : 'Жибек жолу ШКУ марафону 2025',
       date: '2025-05-03',
-      location: language === 'en' ? 'Bishkek, Kyrgyzstan' : 'Бишкек, Кыргызстан',
+      location: language === 'en' 
+        ? 'Bishkek, Kyrgyzstan' 
+        : language === 'ru' 
+          ? 'Бишкек, Кыргызстан'
+          : 'Бишкек, Кыргызстан',
       distance: '42km',
       image: '/images/marathon-placeholder-1.jpg',
       description: language === 'en' 
         ? 'Experience the historic Silk Road route through breathtaking landscapes'
-        : 'Испытайте исторический маршрут Шелкового пути через захватывающие пейзажи',
+        : language === 'ru'
+          ? 'Испытайте исторический маршрут Шелкового пути через захватывающие пейзажи'
+          : 'Тарыхый Жибек жолу маршрутун кооз пейзаждар аркылуу сынап көрүңүз',
       registrationOpen: true
     },
     {
-      id: 'mountain-trail-2024',
-      title: language === 'en' ? 'Mountain Trail Marathon 2024' : 'Горный марафон 2024',
-      date: '2024-08-15',
-      location: language === 'en' ? 'Issyk Kul, Kyrgyzstan' : 'Иссык-Куль, Кыргызстан',
+      id: 'one-run-2024',
+      title: language === 'en' 
+        ? 'ONE RUN Marathon 2024' 
+        : language === 'ru' 
+          ? 'ONE RUN Марафон 2024'
+          : 'ONE RUN Марафон 2024',
+      date: '2024-09-15',
+      location: language === 'en' 
+        ? 'Issyk Kul, Kyrgyzstan' 
+        : language === 'ru' 
+          ? 'Иссык-Куль, Кыргызстан'
+          : 'Ысык-Көл, Кыргызстан',
       distance: '35km',
       image: '/images/marathon-placeholder-2.jpg',
       description: language === 'en'
-        ? 'Challenge yourself in the beautiful mountains of Kyrgyzstan'
-        : 'Испытайте себя в красивых горах Кыргызстана',
+        ? 'Unite with runners from around the world in the beautiful mountains of Kyrgyzstan'
+        : language === 'ru'
+          ? 'Объединитесь с бегунами со всего мира в красивых горах Кыргызстана'
+          : 'Дүйнө жүзүндөгү чуркоочулар менен Кыргызстандын кооз тоолорунда бириккиле',
       registrationOpen: true
-    },
-    {
-      id: 'desert-ultra-2024',
-      title: language === 'en' ? 'Desert Ultra Marathon 2024' : 'Пустынный Ультрамарафон 2024',
-      date: '2024-10-20',
-      location: language === 'en' ? 'Almaty, Kazakhstan' : 'Алматы, Казахстан',
-      distance: '50km',
-      image: '/images/marathon-placeholder-3.jpg',
-      description: language === 'en'
-        ? 'An epic ultra-marathon through the stunning desert landscapes'
-        : 'Эпический ультрамарафон по потрясающим пустынным ландшафтам',
-      registrationOpen: false
     }
   ];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'ru-RU', {
+    let locale = 'en-US';
+    
+    if (language === 'ru') {
+      locale = 'ru-RU';
+    } else if (language === 'kg') {
+      locale = 'ky-KG';
+    }
+    
+    return new Intl.DateTimeFormat(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     }).format(date);
+  };
+
+  // Get text for buttons based on language
+  const getButtonText = (isOpen: boolean) => {
+    if (isOpen) {
+      if (language === 'ru') return 'Зарегистрироваться';
+      if (language === 'kg') return 'Катталуу';
+      return 'Register Now';
+    } else {
+      if (language === 'ru') return 'Скоро открытие';
+      if (language === 'kg') return 'Жакында ачылат';
+      return 'Coming Soon';
+    }
   };
 
   return (
@@ -77,10 +107,14 @@ export default function MarathonGrid() {
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#1E1E4A]"
         >
-          {language === 'en' ? 'Upcoming Marathons' : 'Предстоящие марафоны'}
+          {language === 'en' 
+            ? 'Upcoming Marathons' 
+            : language === 'ru'
+              ? 'Предстоящие марафоны'
+              : 'Келе жаткан марафондор'}
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {marathons.map((marathon) => (
             <motion.div
               key={marathon.id}
@@ -103,10 +137,7 @@ export default function MarathonGrid() {
                 <div className="space-y-2 mb-4">
                   <p className="text-gray-600 flex items-center gap-2">
                     <FaCalendarAlt />
-                    {new Date(marathon.date).toLocaleDateString(
-                      language === 'en' ? 'en-US' : 'ru-RU',
-                      { year: 'numeric', month: 'long', day: 'numeric' }
-                    )}
+                    {formatDate(marathon.date)}
                   </p>
                   <p className="text-gray-600 flex items-center gap-2">
                     <FaMapMarkerAlt />
@@ -121,17 +152,24 @@ export default function MarathonGrid() {
                   {marathon.description}
                 </p>
 
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`w-full py-3 px-6 rounded-full text-white font-semibold
-                    ${marathon.registrationOpen ? 'bg-[#4A90E2]' : 'bg-gray-400'}`}
-                  disabled={!marathon.registrationOpen}
-                >
-                  {marathon.registrationOpen
-                    ? (language === 'en' ? 'Register Now' : 'Зарегистрироваться')
-                    : (language === 'en' ? 'Coming Soon' : 'Скоро открытие')}
-                </motion.button>
+                {marathon.registrationOpen ? (
+                  <ColorfulButton 
+                    label={getButtonText(true)}
+                    href="https://my.runthesilkroad.com/user/register"
+                    external={true}
+                    size="md"
+                    className="w-full"
+                  />
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="w-full py-3 px-6 rounded-full text-white font-semibold bg-gray-400"
+                    disabled
+                  >
+                    {getButtonText(false)}
+                  </motion.button>
+                )}
               </div>
             </motion.div>
           ))}

@@ -6,10 +6,11 @@ import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../translations';
 import { useState, useEffect } from 'react';
 
-export default function PartnersLogos({ className = "" }: { className?: string }) {
+export default function PartnersLogos({ className = "", showTitle = true }: { className?: string; showTitle?: boolean }) {
   const { language } = useLanguage();
   const t = translations[language];
   const [isMobile, setIsMobile] = useState(false);
+  const isDarkBg = false;
 
   useEffect(() => {
     const checkMobile = () => {
@@ -21,99 +22,88 @@ export default function PartnersLogos({ className = "" }: { className?: string }
   }, []);
 
   const partners = [
-    { name: 'Partner 1', logo: '/logos/partner1.png' },
-    { name: 'Partner 2', logo: '/logos/partner2.png' },
-    { name: 'Partner 3', logo: '/logos/partner3.png' },
-    { name: 'Partner 4', logo: '/logos/partner4.png' },
-    { name: 'Partner 5', logo: '/logos/partner5.svg' }
+    { name: 'SCO', logo: '/logos/лого ШОС.png' },
+    { name: 'SCO Window', logo: '/logos/Окно в ШОС.png' },
+    { name: 'СБНОН', logo: '/logos/СБНОН.png' },
+    { name: 'Здоровье', logo: '/logos/Здоровье 150x200.png' },
+    { name: 'Евразия', logo: '/logos/Евразия.png' },
+    { name: 'Timely', logo: '/logos/Timely.png' },
+    { name: 'Shanghe cultural sports', logo: '/logos/Shanghe cultural sports.png' },
+    { name: 'Shanghai art fair', logo: '/logos/Shanghai art fair.png' },
+    { name: 'Здоровье', logo: '/logos/Logo_основной_для светлых фонов Здоровье.png' },
+    { name: 'Globus', logo: '/logos/Logo_Globus_1_page-0001.jpg' },
+    { name: 'Logo 05', logo: '/logos/logo_05.png' },
+    { name: 'Kanda', logo: '/logos/Kanda.png' },
+    { name: 'GLOBUS', logo: '/logos/GLOBUS.png' },
+    { name: 'Белая река', logo: '/logos/150x200 Белая река.png' }
   ];
 
-  if (isMobile) {
+  // Duplicate partners array for seamless carousel
+  const allPartners = [...partners, ...partners, ...partners];
+  
+  const renderLogos = () => {
     return (
-      <div className={`w-full bg-[#1E1E4A] ${className}`}>
-        <div className="grid grid-cols-2 gap-8 px-6 max-w-md mx-auto py-8">
-          {partners.map((partner) => (
-            <div 
-              key={partner.name}
-              className="aspect-[3/2] relative"
-            >
-              <Image
-                src={partner.logo}
-                alt={partner.name}
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <section className="py-12">
-      <motion.h2
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-4xl md:text-5xl font-bold text-center mb-16 text-[#1E1E4A]"
-      >
-        {t.partners.title}
-      </motion.h2>
-
       <div className="relative overflow-hidden">
-        {/* Left fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white to-transparent z-10" />
-        {/* Right fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-white to-transparent z-10" />
+        {/* Fades for light background */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10" />
+        <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10" />
 
         <motion.div
           initial={{ x: 0 }}
           animate={{ x: "-50%" }}
           transition={{
-            duration: 30,
+            duration: 25,
             repeat: Infinity,
             ease: "linear",
+            repeatType: "loop"
           }}
-          className="flex gap-16 items-center whitespace-nowrap px-16"
+          className="flex items-center gap-6 md:gap-10 px-4"
         >
-          {/* First set of logos */}
-          <div className="flex gap-16 items-center">
-            {partners.map((partner) => (
-              <div 
-                key={partner.name}
-                className="w-48 h-32 relative"
-              >
+          {allPartners.map((partner, index) => (
+            <div 
+              key={`${partner.name}-${index}`}
+              className="flex-shrink-0 flex items-center justify-center bg-white p-2 rounded-lg h-20 w-40 md:h-24 md:w-48 shadow-sm"
+            >
+              <div className="relative w-full h-full">
                 <Image
                   src={partner.logo}
                   alt={partner.name}
-                  fill
-                  className="object-contain"
-                  priority
+                  width={240}
+                  height={180}
+                  className="object-contain w-auto h-auto max-w-full max-h-full mx-auto"
                 />
               </div>
-            ))}
-          </div>
-
-          {/* Duplicate set for seamless loop */}
-          <div className="flex gap-16 items-center">
-            {partners.map((partner) => (
-              <div 
-                key={`${partner.name}-duplicate`}
-                className="w-48 h-32 relative"
-              >
-                <Image
-                  src={partner.logo}
-                  alt={partner.name}
-                  fill
-                  className="object-contain"
-                  priority
-                />
-              </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </motion.div>
       </div>
+    );
+  };
+
+  if (isMobile) {
+    return (
+      <div className="w-full py-8">
+        <h3 className="text-2xl font-bold text-center mb-8 text-[#1E1E4A]">
+          {t.partners.title}
+        </h3>
+        {renderLogos()}
+      </div>
+    );
+  }
+
+  return (
+    <section className="py-10">
+      {showTitle && (
+        <motion.h2
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#1E1E4A]"
+        >
+          {t.partners.title}
+        </motion.h2>
+      )}
+
+      {renderLogos()}
     </section>
   );
 } 

@@ -7,7 +7,6 @@ import { LanguageProvider } from './context/LanguageContext';
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export const metadata: Metadata = {
@@ -19,6 +18,15 @@ export const metadata: Metadata = {
   title: "Run The Silk Road - Marathon Series",
   description: "Experience historic routes through breathtaking landscapes across Asia",
   keywords: "marathon, silk road, running, trail running, Asia, sports events",
+  icons: {
+    icon: [
+      { url: '/logo.png' },
+      { url: '/favicon.ico' }
+    ],
+    apple: [
+      { url: '/logo.png' }
+    ]
+  },
   openGraph: {
     title: "Run The Silk Road - Marathon Series",
     description: "Experience historic routes through breathtaking landscapes across Asia",
@@ -46,7 +54,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className}>
-      <body>
+      <body className="scroll-boundary">
         <LanguageProvider>
           {children}
         </LanguageProvider>

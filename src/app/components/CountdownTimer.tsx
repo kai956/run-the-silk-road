@@ -53,6 +53,46 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     return () => clearInterval(timer);
   }, [targetDate]);
 
+  // Get text based on the current language
+  const getUntilText = () => {
+    switch (language) {
+      case 'ru':
+        return 'До начала марафона';
+      case 'kg':
+        return 'Марафон башталганга чейин';
+      default:
+        return 'Time until marathon starts';
+    }
+  };
+
+  // Get label for time units based on language
+  const getTimeLabel = (type: 'days' | 'hours' | 'minutes' | 'seconds') => {
+    const labels: Record<string, Record<string, string>> = {
+      days: {
+        en: 'Days',
+        ru: 'Дней',
+        kg: 'Күн'
+      },
+      hours: {
+        en: 'Hours',
+        ru: 'Часов',
+        kg: 'Саат'
+      },
+      minutes: {
+        en: 'Minutes',
+        ru: 'Минут',
+        kg: 'Мүнөт'
+      },
+      seconds: {
+        en: 'Seconds',
+        ru: 'Секунд',
+        kg: 'Секунд'
+      }
+    };
+
+    return labels[type][language] || labels[type]['en'];
+  };
+
   function TimeUnit({ value, label, className }: { value: number; label: string; className?: string }) {
     return (
       <div className="flex flex-col items-center">
@@ -69,30 +109,30 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   return (
     <div className="w-full flex flex-col items-center space-y-1 md:space-y-6">
       <AnimatedGradientText className="text-[6px] sm:text-sm md:text-lg">
-        {language === 'en' ? 'Time until marathon starts' : 'До начала марафона'}
+        {getUntilText()}
       </AnimatedGradientText>
       <div className="flex justify-center gap-1 md:gap-6">
         <TimeUnit 
           value={timeLeft.days} 
-          label={language === 'en' ? 'Days' : 'Дней'} 
+          label={getTimeLabel('days')} 
           className="text-3xl md:text-7xl"
         />
         <div className="text-3xl md:text-7xl font-bold text-white">:</div>
         <TimeUnit 
           value={timeLeft.hours} 
-          label={language === 'en' ? 'Hours' : 'Часов'} 
+          label={getTimeLabel('hours')} 
           className="text-3xl md:text-7xl"
         />
         <div className="text-3xl md:text-7xl font-bold text-white">:</div>
         <TimeUnit 
           value={timeLeft.minutes} 
-          label={language === 'en' ? 'Minutes' : 'Минут'} 
+          label={getTimeLabel('minutes')} 
           className="text-3xl md:text-7xl"
         />
         <div className="text-3xl md:text-7xl font-bold text-white">:</div>
         <TimeUnit 
           value={timeLeft.seconds} 
-          label={language === 'en' ? 'Seconds' : 'Секунд'} 
+          label={getTimeLabel('seconds')} 
           className="text-3xl md:text-7xl"
         />
       </div>

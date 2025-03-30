@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { FaSmile, FaCalendarAlt, FaTag } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getNews } from '../lib/contentful';
+import { getNews, getLocalizedValue, urlFor } from '../lib/sanity';
 
 export default function NewsSection() {
   const { language } = useLanguage();
@@ -15,8 +15,7 @@ export default function NewsSection() {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const locale = language === 'en' ? 'en-US' : 'ru-RU';
-        const data = await getNews(3, locale); // Fetch only 3 items with correct locale
+        const data = await getNews(3, language); // Fetch only 3 items with correct language
         console.log('Fetched news data:', data);
         setNewsItems(data);
       } catch (error) {
@@ -29,6 +28,18 @@ export default function NewsSection() {
     fetchNews();
   }, [language]); // Re-fetch when language changes
 
+  // Get locale for date formatting
+  const getDateLocale = () => {
+    switch (language) {
+      case 'ru':
+        return 'ru-RU';
+      case 'kg':
+        return 'ky-KG';
+      default:
+        return 'en-US';
+    }
+  };
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -37,7 +48,9 @@ export default function NewsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           className="text-3xl md:text-4xl font-bold text-[#1E1E4A] mb-12 text-center"
         >
-          {language === 'en' ? 'Latest News' : 'Последние новости'}
+          {language === 'kg' ? 'Акыркы жаңылыктар' : 
+           language === 'ru' ? 'Последние новости' : 
+           'Latest News'}
         </motion.h2>
 
         {/* News Grid */}
@@ -57,18 +70,18 @@ export default function NewsSection() {
             ))
           ) : newsItems.length > 0 ? (
             newsItems.map((item) => (
-              <Link href={`/news/${item.sys.id}?lang=${language}`} key={item.sys.id}>
+              <Link href={`/news/${item.slug || item._id}?lang=${language}`} key={item._id}>
                 <motion.article
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   whileHover={{ y: -10 }}
                   className="card cursor-pointer transition-shadow hover:shadow-xl"
                 >
-                  {item.fields?.image?.fields?.file?.url ? (
+                  {item.image ? (
                     <div className="relative h-48">
                       <Image
-                        src={`https:${item.fields.image.fields.file.url}`}
-                        alt={item.fields.title?.[language] || ''}
+                        src={urlFor(item.image).url()}
+                        alt={getLocalizedValue(item.title, language) || ''}
                         fill
                         className="object-cover rounded-t-lg"
                       />
@@ -83,23 +96,23 @@ export default function NewsSection() {
                     <div className="flex items-center gap-2 mb-4">
                       <FaTag className="text-[#4A90E2]" />
                       <span className="text-sm font-semibold text-[#4A90E2]">
-                        {item.fields?.category || ''}
+                        {item.category || ''}
                       </span>
                     </div>
                     
                     <h3 className="text-xl font-semibold mb-3 text-[#1E1E4A]">
-                      {item.fields?.title || ''}
+                      {getLocalizedValue(item.title, language) || ''}
                     </h3>
                     
                     <p className="text-gray-600 mb-4">
-                      {item.fields?.excerpt || ''}
+                      {getLocalizedValue(item.excerpt, language) || ''}
                     </p>
                     
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-gray-500 flex items-center gap-2">
                         <FaCalendarAlt />
-                        {new Date(item.sys.createdAt).toLocaleDateString(
-                          language === 'en' ? 'en-US' : 'ru-RU',
+                        {new Date(item._createdAt || item.publishedAt).toLocaleDateString(
+                          getDateLocale(),
                           { year: 'numeric', month: 'long', day: 'numeric' }
                         )}
                       </span>
@@ -111,7 +124,9 @@ export default function NewsSection() {
           ) : (
             <div className="col-span-3 text-center py-12">
               <p className="text-gray-600">
-                {language === 'en' ? 'No news articles available.' : 'Нет доступных новостей.'}
+                {language === 'kg' ? 'Жаңылыктар жок.' : 
+                 language === 'ru' ? 'Нет доступных новостей.' : 
+                 'No news articles available.'}
               </p>
             </div>
           )}
@@ -122,7 +137,9 @@ export default function NewsSection() {
           <div className="mt-16 flex justify-center items-center">
             <Link href="/news" className="inline-block">
               <button className="px-12 py-3.5 text-[#1E1E4A] font-medium text-base border border-[#1E1E4A] rounded-full hover:bg-[#1E1E4A] hover:text-white transition-all duration-300">
-                {language === 'en' ? 'View All News' : 'Все новости'}
+                {language === 'kg' ? 'Бардык жаңылыктарды көрүү' : 
+                 language === 'ru' ? 'Все новости' : 
+                 'View All News'}
               </button>
             </Link>
           </div>
